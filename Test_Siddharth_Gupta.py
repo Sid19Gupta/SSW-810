@@ -2,7 +2,7 @@
 Author: Siddharth Gupta
 """
 import unittest
-from HW09_Siddharth_Gupta import Repository
+from Code_Siddharth_Gupta import Repository
 class TestRepository(unittest.TestCase):
     """class for testing all the functions """
     def test_student(self):
