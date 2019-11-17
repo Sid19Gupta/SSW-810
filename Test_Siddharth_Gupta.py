@@ -1,31 +1,17 @@
 import unittest
 from Code_Siddharth_Gupta import Repository
+import sqlite3
 class TestRepository(unittest.TestCase):
     """class for testing all the functions """
     def test_student(self):
         """testing student prettytable """
-        expected = {'10103': ['10103', 'Baldwin, C', 'SFEN', ['CS 501', 'SSW 564', 'SSW 567', 'SSW 687'],
-                              {'SSW 555', 'SSW 540'}, None],
-                    '10115': ['10115', 'Wyatt, X', 'SFEN', ['CS 545', 'SSW 564', 'SSW 567', 'SSW 687'],
-                              {'SSW 555', 'SSW 540'}, None],
-                    '10172': ['10172', 'Forbes, I', 'SFEN', ['SSW 555', 'SSW 567'],
-                              {'SSW 564', 'SSW 540'}, {'CS 545', 'CS 513', 'CS 501'}],
-                    '10175': ['10175', 'Erickson, D', 'SFEN', ['SSW 564', 'SSW 567', 'SSW 687'],
-                              {'SSW 555', 'SSW 540'}, {'CS 545', 'CS 513', 'CS 501'}],
-                    '10183': ['10183', 'Chapman, O', 'SFEN', ['SSW 689'],
-                              {'SSW 567', 'SSW 555', 'SSW 564', 'SSW 540'}, {'CS 545', 'CS 513', 'CS 501'}],
-                    '11399': ['11399', 'Cordova, I', 'SYEN', ['SSW 540'],
-                              {'SYS 612', 'SYS 800', 'SYS 671'}, None],
-                    '11461': ['11461', 'Wright, U', 'SYEN', ['SYS 611', 'SYS 750', 'SYS 800'],
-                              {'SYS 612', 'SYS 671'}, {'SSW 565', 'SSW 810', 'SSW 540'}],
-                    '11658': ['11658', 'Kelly, P', 'SYEN', [], {'SYS 612', 'SYS 800', 'SYS 671'},
-                              {'SSW 565', 'SSW 810', 'SSW 540'}],     
-                    '11714': ['11714', 'Morton, A', 'SYEN', ['SYS 611', 'SYS 645'],
-                              {'SYS 612', 'SYS 800', 'SYS 671'}, {'SSW 565', 'SSW 810', 'SSW 540'}],
-                    '11788': ['11788', 'Fuller, E', 'SYEN', ['SSW 540'],
-                              {'SYS 612', 'SYS 800', 'SYS 671'}, None]}
+        expected = {'10103': ['10103', 'Jobs, S', 'SFEN', ['CS 501', 'SSW 810'], {'SSW 555', 'SSW 540'}, None],
+                    '10115': ['10115', 'Bezos, J', 'SFEN', ['SSW 810'], {'SSW 555', 'SSW 540'}, {'CS 501', 'CS 546'}],
+                    '10183': ['10183', 'Musk, E', 'SFEN', ['SSW 555', 'SSW 810'], {'SSW 540'}, {'CS 501', 'CS 546'}],
+                    '11714': ['11714', 'Gates, B', 'CS', ['CS 546', 'CS 570', 'SSW 810'], set(), None],
+                    '11717': ['11717', 'Kernighan, B', 'CS', [], {'CS 546', 'CS 570'}, {'SSW 810', 'SSW 565'}]}
 
-        dir_1 = Repository('/Users/siddharthgupta/Downloads/SSW810')
+        dir_1 = Repository('/Users/siddharthgupta/Downloads/SSW')
 
         student_dict = {}
         for cwid, student in dir_1._students.items():
@@ -35,20 +21,14 @@ class TestRepository(unittest.TestCase):
 
     def test_instructor(self):
         """testing instructor prettytable """
-        expected = [['98765', 'Einstein, A', 'SFEN', 'SSW 567', 4],
-                    ['98765', 'Einstein, A', 'SFEN', 'SSW 540', 3],
-                    ['98764', 'Feynman, R', 'SFEN', 'SSW 564', 3],
-                    ['98764', 'Feynman, R', 'SFEN', 'SSW 687', 3],
-                    ['98764', 'Feynman, R', 'SFEN', 'CS 501', 1],
-                    ['98764', 'Feynman, R', 'SFEN', 'CS 545', 1],
-                    ['98763', 'Newton, I', 'SFEN', 'SSW 555', 1],
-                    ['98763', 'Newton, I', 'SFEN', 'SSW 689', 1],
-                    ['98760', 'Darwin, C', 'SYEN', 'SYS 800', 1],
-                    ['98760', 'Darwin, C', 'SYEN', 'SYS 750', 1],
-                    ['98760', 'Darwin, C', 'SYEN', 'SYS 611', 2],
-                    ['98760', 'Darwin, C', 'SYEN', 'SYS 645', 1]]
+        expected = [['98764', 'Cohen, R', 'SFEN', 'CS 546', 1],
+                    ['98763', 'Rowland, J', 'SFEN', 'SSW 810', 4],
+                    ['98763', 'Rowland, J', 'SFEN', 'SSW 555', 1],
+                    ['98762', 'Hawking, S', 'CS', 'CS 501', 1],
+                    ['98762', 'Hawking, S', 'CS', 'CS 546', 1],
+                    ['98762', 'Hawking, S', 'CS', 'CS 570', 1]]
 
-        dir_1 = Repository('/Users/siddharthgupta/Downloads/SSW810')
+        dir_1 = Repository('/Users/siddharthgupta/Downloads/SSW')
         instructor_list = []
         for instructor in dir_1._instructors.values():
             for item in instructor.summary_instructor():
@@ -57,17 +37,39 @@ class TestRepository(unittest.TestCase):
 
     def test_major(self):
         """ testing major prettytable """
-        expected = {'SFEN': ['SFEN', {'SSW 567', 'SSW 555', 'SSW 564', 'SSW 540'},
-                             {'CS 545', 'CS 501', 'CS 513'}],
-                    'SYEN': ['SYEN', {'SYS 800', 'SYS 612', 'SYS 671'},
-                             {'SSW 565', 'SSW 810', 'SSW 540'}]}
+        expected = {'SFEN': ['SFEN', {'SSW 810', 'SSW 540', 'SSW 555'},
+                             {'CS 501', 'CS 546'}],
+                    'CS': ['CS', {'CS 570', 'CS 546'},
+                           {'SSW 810', 'SSW 565'}]}
         
-        dir_1 = Repository('/Users/siddharthgupta/Downloads/SSW810')
+        dir_1 = Repository('/Users/siddharthgupta/Downloads/SSW')
         major_dict = {}
         for major, majorinstance in dir_1._majors.items():
             major_dict[major] = majorinstance.summary_major()
 
         self.assertTrue(major_dict == expected)
+
+    def test_instructorsecond(self):
+        """ testing instructors second pretty table """
+        expected = {('98764', 'CS 546'): ('98764', 'Cohen, R', 'SFEN', 'CS 546', 1),
+                    ('98763', 'SSW 810'): ('98763', 'Rowland, J', 'SFEN', 'SSW 810', 4),
+                    ('98763', 'SSW 555'): ('98763', 'Rowland, J', 'SFEN', 'SSW 555', 1),
+                    ('98762', 'CS 501'): ('98762', 'Hawking, S', 'CS', 'CS 501', 1),
+                    ('98762', 'CS 546'): ('98762', 'Hawking, S', 'CS', 'CS 546', 1),
+                    ('98762', 'CS 570'): ('98762', 'Hawking, S', 'CS', 'CS 570', 1)}
+        try:
+            db_path = '/Users/siddharthgupta/Downloads/SSW/python.db'
+            db = sqlite3.connect(db_path)
+        except sqlite3.OperationalError:
+            print(f'unable to open database at {db_path}')
+        else:
+            query = ''' select i.CWID, i.Name, i.Dept, g.Course, count(*) as count
+                        from INSTRUCTOR i join GRADE g on i.CWID = g.InstructorCWID 
+                        group by i.Name, i.Dept, g.course '''
+            instructor_dict = {}
+            for row in db.execute(query):
+                instructor_dict[(row[0], row[3])] = tuple(row)
+        self.assertTrue(instructor_dict == expected)
 
 
 if __name__ == '__main__':
