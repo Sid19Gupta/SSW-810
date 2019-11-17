@@ -5,6 +5,7 @@ import os
 from collections import defaultdict
 from prettytable import PrettyTable
 from HW08_Siddharth_Gupta import file_reading_gen
+import sqlite3
 class Repository:
     """ repository class  is just  to store 
         all of the data structures together in a single place
@@ -28,11 +29,13 @@ class Repository:
             self.prettyprint_instructor()
             print('\n major table')
             self.prettyprint_major()
+            print('\n instructor second table')
+            self.instructor_table_db('/Users/siddharthgupta/Downloads/SSW/python.db')
 
     def _read_student(self, path):
         """ read student file"""
         try:
-            for cwid, name, major in file_reading_gen(path, 3, sep=';', header=True):
+            for cwid, name, major in file_reading_gen(path, 3, sep='\t', header=True):
                 if major in self._majors:
                     if cwid in self._students:
                         print(f'{cwid} already present')
@@ -48,7 +51,7 @@ class Repository:
     def _read_instructor(self, path):
         """ read instructor file"""
         try:
-            for icwid, name, dep in file_reading_gen(path, 3, sep='|', header=True):
+            for icwid, name, dep in file_reading_gen(path, 3, sep='\t', header=True):
                 if icwid in self._instructors:
                     print(f'{icwid} already present')
                 else:
@@ -61,7 +64,7 @@ class Repository:
     def _read_grades(self, path):
         """ read grade file"""
         try:
-            for scwid, course, grade, icwid in file_reading_gen(path, 4, sep='|', header=True):
+            for scwid, course, grade, icwid in file_reading_gen(path, 4, sep='\t', header=True):
                 if scwid in self._students:
                     self._students[scwid].coursegrade(course, grade)
                 else:
@@ -109,6 +112,23 @@ class Repository:
         for major in self._majors.values():
             pt3.add_row(major.summary_major())
         print(pt3)
+
+    def instructor_table_db(self, db_path):
+        """ second pretty table for instructor"""
+        try:
+            db = sqlite3.connect(db_path)
+        except sqlite3.OperationalError:
+            print(f'unable to open database at {db_path}')
+        else:
+            query = ''' select i.CWID, i.Name, i.Dept, g.Course, count(*) as count
+                        from INSTRUCTOR i join GRADE g on i.CWID = g.InstructorCWID 
+                        group by i.Name, i.Dept, g.course, i.CWID '''
+            pt4 = PrettyTable(field_names=Instructor.header)
+            for row in db.execute(query):
+                pt4.add_row(row)
+            print(pt4)
+            db.close()
+
 
 class Student:
     """ class for storing student info """
@@ -198,11 +218,10 @@ class Major:
 
 def main():
     """calling the repository class """
-    dir_1 = '/Users/siddharthgupta/Downloads/SSW810'
+    dir_1 = '/Users/siddharthgupta/Downloads/SSW'
     Repository(dir_1, True)
 
 
 if __name__ == '__main__':
     """  calling main """
     main()
-
