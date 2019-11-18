@@ -58,10 +58,9 @@ class TestRepository(unittest.TestCase):
                     ('98762', 'CS 546'): ('98762', 'Hawking, S', 'CS', 'CS 546', 1),
                     ('98762', 'CS 570'): ('98762', 'Hawking, S', 'CS', 'CS 570', 1)}
         try:
-            db_path = '/Users/siddharthgupta/Downloads/SSW/python.db'
-            db = sqlite3.connect(db_path)
+            db = sqlite3.connect('/Users/siddharthgupta/Downloads/SSW/python.db')
         except sqlite3.OperationalError:
-            print(f'unable to open database at {db_path}')
+            print(f'unable to open database at python.db')
         else:
             query = ''' select i.CWID, i.Name, i.Dept, g.Course, count(*) as count
                         from INSTRUCTOR i join GRADE g on i.CWID = g.InstructorCWID 
@@ -69,7 +68,7 @@ class TestRepository(unittest.TestCase):
             instructor_dict = {}
             for row in db.execute(query):
                 instructor_dict[(row[0], row[3])] = tuple(row)
-        self.assertTrue(instructor_dict == expected)
+            self.assertTrue(instructor_dict == expected)
 
 
 if __name__ == '__main__':
